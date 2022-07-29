@@ -1,0 +1,43 @@
+body {
+  margin: 0;
+  background-color: rgba(239, 239, 239, 0.655)
+}
+
+*{
+  padding: 0;
+}
+
+.profile-page{
+
+  margin: 0;
+  background-color: rgb(255, 255, 255);
+  height : 100vh;
+  width : 100vw;
+  overflow: auto;
+
+}
+
+.slide-right {
+  animation: 0.2s slide-right;
+}
+@keyframes slide-right {
+  from {
+    margin-left: -100%;
+  }
+  to {
+    margin-left: 0%;
+  }
+}
+
+.slide-left {
+  animation: 0.2s slide-left;
+}
+
+@keyframes slide-left {
+  from {
+    margin-left: 100%;
+  }
+  to {
+    margin-left: 0%;
+  }
+}
