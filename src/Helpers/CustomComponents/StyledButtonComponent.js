@@ -35,7 +35,7 @@ function StyledButtonComponent({mode,styles, onClick, content}) {
         })
     }
   return (
-    <StyledButton sx  = {styles} onClick = {onClick} ><Typography variant = 'subtitle1'>{content}</Typography></StyledButton>
+    <StyledButton sx  = {styles} onClick = {onClick}><Typography variant = 'subtitle1'>{content}</Typography></StyledButton>
   )
 }
 

@@ -18,7 +18,7 @@ import { useEffect, useState } from "react";
 import { db } from "../firebase";
 import firebase from 'firebase/compat/app';
 
-const Post = ({user, postId, avatarPic, userName, date,imgUrl, caption }) => {
+const Post = ({user, postId, avatarPic, userName, date,mediaUrls, description }) => {
 
   const [ comments , setComments] = useState(null);
   const [ comment , setComment] = useState('');
@@ -77,13 +77,18 @@ const Post = ({user, postId, avatarPic, userName, date,imgUrl, caption }) => {
         title={userName}
         subheader={date}
       />
-      <CardMedia
-        component="img"
-        style={{
-            maxHeight: "300px"
-          }}
-        image={imgUrl}
-      />
+      {mediaUrls.map(imgUrl =>{
+        return (
+          <CardMedia
+          key = {imgUrl}
+          component="img"
+          style={{
+              maxHeight: "300px"
+            }}
+          image={imgUrl}
+        />
+        )
+      })}
       <CardActions disableSpacing sx = {{padding : '0'}}>
         <IconButton aria-label="add to favorites">
           <Checkbox
@@ -97,7 +102,7 @@ const Post = ({user, postId, avatarPic, userName, date,imgUrl, caption }) => {
       </CardActions>
       <CardContent>
         <Typography variant="body2" color="text.primary">
-            {caption}
+            {description}
         </Typography>
       </CardContent>
       <CardContent>

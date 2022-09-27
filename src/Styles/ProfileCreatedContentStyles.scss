@@ -1,0 +1,60 @@
+@use '../index.scss';
+
+.createdContent-container{
+
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px;
+
+    &:hover .createdContent-card{
+        opacity: 0.3;
+    }
+
+    &:hover .createdContent-overlay{
+        opacity: 1;
+    }
+
+}
+
+.profile-createdContent{
+    width: 70%;
+}
+
+.createdContent-card{
+
+    height: 100%;
+    border-radius: 0;
+    transition: .5s ease;
+
+
+    img{
+        object-fit: cover;
+        height: 100%;
+    }
+}
+
+.createdContent-overlay{
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    transition: .5s ease;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    padding: 8px;
+
+}
+
+.overlay-stack{
+    align-items: center;
+}

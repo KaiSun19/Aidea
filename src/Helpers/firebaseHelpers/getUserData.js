@@ -1,4 +1,4 @@
-import { db } from "../firebase";
+import { db } from "../../firebase";
 import firebase from 'firebase/compat/app';
 import { useState } from "react";
 

@@ -7,7 +7,6 @@ import NavBar from './Components/NavBar';
 import RightBar from './Components/RightBar';
 import { auth, db } from './firebase';
 import {useUser} from "./Context";
-import {getUserData} from './Helpers/getUserData'
 
 function Home() {
 

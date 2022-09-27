@@ -14,8 +14,8 @@ function Feed({posts,user}) {
                 <Post key = {post.id} avatarPic={post.data.avatarPic}
                         userName = {post.data.userName}
                         date = {post.data.date}
-                        imgUrl = {post.data.imgUrl}
-                        caption = {post.data.caption}
+                        mediaUrls = {post.data.mediaUrls}
+                        description = {post.data.description}
                         postId = {post.id}
                         user = {user}
                         />

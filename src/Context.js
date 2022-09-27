@@ -19,9 +19,7 @@ export const UserProvider = ({children}) =>{
       const unsubscribe = auth.onAuthStateChanged((authUser) =>{
 
       if(authUser){ // means that a user is logged in 
-          console.log(authUser);
           setUser(authUser)
-          console.log(user.displayName);
       }
       else{
           setUser(null)

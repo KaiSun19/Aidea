@@ -1,6 +1,19 @@
+$sm-screen : 395px;
+$md-screen : 900px;
+$l-screen : 1536px;
+
+
+// colors
+
+$black : rgb(13, 13, 13);
+$dark-gray  : rgb(71, 71, 71);
+$light-gray :  rgb(180, 180, 180);
+$red : #ff6969e6;
+
 body {
   margin: 0;
-  background-color: rgba(239, 239, 239, 0.655)
+  background-color: rgba(255, 255, 255, 0.341);
+  overflow-x : hidden
 }
 
 *{
@@ -40,4 +53,11 @@ body {
   to {
     margin-left: 0%;
   }
+}
+
+.add-media-card{
+  width: 58px;
+  margin : 4px;
+  height: 58px;
+  border-radius: 5px;
 }

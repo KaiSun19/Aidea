@@ -1,86 +1,93 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { Box, Button, Fade, FormControl, Input, InputLabel, LinearProgress, Modal, Stack, Typography, IconButton, Switch } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Backdrop from '@mui/material/Backdrop';
 import { auth, db, storage } from '../firebase';
 import firebase from 'firebase/compat/app';
-import LaunchOutlinedIcon from '@mui/icons-material/LaunchOutlined';
 import ModalNavigationArrows from '../Helpers/CustomComponents/ModalNavigationArrows';
+import CreatePostModalStage0 from '../Helpers/CustomComponents/CreatePostModalStages/CreatePostModalStage0';
+import CreatePostModalStage1 from '../Helpers/CustomComponents/CreatePostModalStages/CreatePostModalStage1';
+import modalStyle from '../Styles/ModalStyle';
+import CreatePostModalStage2 from '../Helpers/CustomComponents/CreatePostModalStages/CreatePostModalStage2';
+import CreatePostModalStage3 from '../Helpers/CustomComponents/CreatePostModalStages/CreatePostModalStage3';
+import CreatePostModalStage4 from '../Helpers/CustomComponents/CreatePostModalStages/CreatePostModalStage4';
+import CreatePostModalStage5 from '../Helpers/CustomComponents/CreatePostModalStages/CreatePostModalStage5';
+import KeyboardArrowRightRoundedIcon from '@mui/icons-material/KeyboardArrowRightRounded';
+
 
 function CreatePostModal({open, handleClose, username}) {
 
-    const modalStyle = {
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: 420,
-        height : 'auto',
-        bgcolor: 'background.paper',
-        boxShadow: 24,
-        p: 4,
-        display : 'flex',
-        flexDirection : 'column', 
-        borderRadius : '20px'
-
-      };
-
-    const [ caption , setCaption] = useState('')
-
-    const [ image , setImage] = useState('')
-
     const [ progress, setProgress] = useState(0)
+    const [ stage, setStage] = useState(0)
 
-    const [ stage, setStage] = useState('intro')
+    const baseSelection = [{step : 0 , name : 'Selections'}, {step : 5, name : 'Submit'}]
+    // states changed from user interactions 
 
-    const handleCaptionChange = (event) => {
-        setCaption(event.target.value);
-    };
+    const [selections, setSelections] = useState(baseSelection)
+    const [title, setTitle] = useState(null)
+    const [description, setDescription] = useState(null)
+    const [media, setMedia] = useState()
+    const [voice, setVoice] = useState({
+        isRecording: false,
+        blobURL: '',
+        isBlocked: false,
+    });
 
-    const handleImageChange = (event) => {
-        if(event.target.files[0]){
-            setImage(event.target.files[0])
-        }
-    };
+    useEffect(()=>{
+        setProgress(stage * 20)
+    }, [stage])
 
     const handleUpload = (e) =>{
         
         e.preventDefault()
-
-        const uploadTask = storage.ref(`images/${image.name}`).put(image);
-        
-        uploadTask.on( // when file begins uploading record how much of the file is uploaded 
-            'state_changed', 
-            (snapshot) =>{
-                const progress = Math.round(snapshot.bytesTransferred / snapshot.totalBytes) *100;
-                setProgress(progress)
-            }, 
-            (error) =>{
-                console.log(error)
-            }, 
-            () =>{
-                storage
-                    .ref('images')
-                    .child(image.name)
-                    .getDownloadURL()
-                    .then( url =>{
-                        db.collection('Posts').add({
-                            timestamp : firebase.firestore.FieldValue.serverTimestamp(),
-                            caption : caption,
-                            imgUrl : url,
-                            userName : username
+        let downloadUrls = []
+        let docId;
+        db.collection('Posts').add({
+            timestamp : firebase.firestore.FieldValue.serverTimestamp(),
+            title : title,
+            description : description,
+            userName : username,
+            mediaUrls : downloadUrls
+        }).then(docRef =>{
+            docId = docRef.id;
+        })
+        media.map(individualMedia =>{
+            const uploadTask = storage.ref(`images/${individualMedia.name}`).put(individualMedia.data)        
+            uploadTask.on( // when file begins uploading record how much of the file is uploaded 
+                'state_changed',
+                (snapshot) =>{
+                    // maybe create progress bar to see uploading file 
+                },  
+                (error) =>{
+                    console.log(error)
+                }, 
+                () =>{
+                    storage
+                        .ref('images')
+                        .child(individualMedia.name)
+                        .getDownloadURL()
+                        .then( url =>{
+                            downloadUrls.push(url)
+                            db.collection('Posts').doc(docId).set({
+                                mediaUrls : downloadUrls
+                            }, {merge: true})
                         })
-                    })
-                    setProgress(0)
-                    setCaption('')
-                    setImage('')
-            }
-            
-
-
-        )
+            })
+        })
 
         handleClose();
+        setProgress(0);
+        setStage(0);
+        setSelections([]);
+        setTitle(null);
+        setDescription(null);
+        setMedia()
+        setVoice({
+            isRecording: false,
+            blobURL: '',
+            isBlocked: false,
+        })
+
     }
 
 
@@ -93,7 +100,10 @@ function CreatePostModal({open, handleClose, username}) {
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
         open={open}
-        onClose={handleClose}
+        onClose={() => {
+            handleClose();
+            setStage(0);
+            setProgress(0)}}
         closeAfterTransition
         BackdropComponent={Backdrop}
         BackdropProps={{
@@ -104,7 +114,6 @@ function CreatePostModal({open, handleClose, username}) {
         <Box sx={modalStyle} component = 'form'>
 
             <Stack direction = 'column' spacing = {2} p = {2}> 
-            {/* Start by exporting this stage to its own component */}
                 <center>
                     <Typography variant = 'h6'>Share your idea</Typography>
                 </center>
@@ -112,70 +121,73 @@ function CreatePostModal({open, handleClose, username}) {
 
             </Stack>
 
-            <Stack direction = 'column' spacing = {2}>
+            {stage === 0 ? (
+                <>
+                    <CreatePostModalStage0 selectionsChanger={setSelections} selections = {selections}/>
 
-                <center>
-                    <Typography variant = 'body1'><strong>How will you present your idea ?</strong></Typography>
-                </center>
-                <Box sx = {{display : 'flex', flexDirection : 'column', alignItems : 'center'}}>
-                <Box>
-                <Box sx ={{display:'flex', alignItems : 'center', backgroundColor : '#dcdcdca1', borderRadius : '15px'}} p = {2} m = {1}>
-                    <Typography variant = 'h6'>Title</Typography>
-                    <IconButton
-                                    size="large"
-                                    aria-label="learn more"
-                                    aria-haspopup="true"
-                                    color="primary"
-                                    sx = {{padding : 0, width : '24px', height : '24px'}}>
-                        <LaunchOutlinedIcon sx = {{padding : 0, width : 'inherit', height : 'inherit'}}/>
-                    </IconButton >
-                    <Switch  color="default" sx = {{height : '38px', width : '62px', marginLeft : '30px'}}/>
-                </Box>
+                    <ModalNavigationArrows leftDisable={true} rightDisable={false} updateStage = {setStage} currentStage = {stage} handleProgress = {setProgress} selections = {selections} />
+                </>
+            ) : 
+            ('')
+                }
+            
+            {stage === 1 ? (
+                <>
+                    <CreatePostModalStage1 updateTitle = {setTitle} currentTitle = {title}/>
 
-                <Box sx ={{display:'flex', alignItems : 'center', backgroundColor : '#dcdcdca1', borderRadius : '15px'}} p = {2} m = {1}>
-                    <Typography variant = 'h6'>Description</Typography>
-                    <IconButton
-                                    size="large"
-                                    aria-label="learn more"
-                                    aria-haspopup="true"
-                                    color="primary"
-                                    sx = {{padding : 0, width : '24px', height : '24px'}}>
-                        <LaunchOutlinedIcon sx = {{padding : 0, width : 'inherit', height : 'inherit'}}/>
-                    </IconButton >
-                    <Switch  color="default" sx = {{height : '38px', width : '62px', marginLeft : '30px'}}/>
-                </Box>
+                    <ModalNavigationArrows leftDisable={false} rightDisable={false} updateStage = {setStage} currentStage = {stage} handleProgress = {setProgress} selections = {selections}/>
+                </>
+            ) : 
+            ('')
+                }
 
-                <Box sx ={{display:'flex', alignItems : 'center', backgroundColor : '#dcdcdca1', borderRadius : '15px'}} p = {2} m = {1}>
-                    <Typography variant = 'h6'>Media</Typography>
-                    <IconButton
-                                    size="large"
-                                    aria-label="learn more"
-                                    aria-haspopup="true"
-                                    color="primary"
-                                    sx = {{padding : 0, width : '24px', height : '24px'}}>
-                        <LaunchOutlinedIcon sx = {{padding : 0, width : 'inherit', height : 'inherit'}}/>
-                    </IconButton >
-                    <Switch  color="default" sx = {{height : '38px', width : '62px', marginLeft : '30px'}}/>
-                </Box>
+            {stage === 2 ? (
+                <>
+                    <CreatePostModalStage2 updateDesc = {setDescription} currentDesc = {description}/>
 
-                <Box sx ={{display:'flex', alignItems : 'center', backgroundColor : '#dcdcdca1', borderRadius : '15px'}} p = {2} m = {1}>
-                    <Typography variant = 'h6'>Voice</Typography>
-                    <IconButton
-                                    size="large"
-                                    aria-label="learn more"
-                                    aria-haspopup="true"
-                                    color="primary"
-                                    sx = {{padding : 0, width : '24px', height : '24px'}}>
-                        <LaunchOutlinedIcon sx = {{padding : 0, width : 'inherit', height : 'inherit'}}/>
-                    </IconButton >
-                    <Switch  color="default" sx = {{height : '38px', width : '62px', marginLeft : '30px'}}/>
-                </Box>
-                </Box>
-                </Box>
+                    <ModalNavigationArrows leftDisable={false} rightDisable={false} updateStage = {setStage} currentStage = {stage} handleProgress = {setProgress} selections = {selections}/>
+                </>
+            ) : 
+            ('')
+                }
 
-            </Stack>
+            {stage === 3 ? (
 
-            <ModalNavigationArrows leftDisable={true} rightDisable={false} />
+                <>
+                    <CreatePostModalStage3 currentMedia = {media} updateMedia = {setMedia}/>
+
+                    <ModalNavigationArrows leftDisable={false} rightDisable={false} updateStage = {setStage} currentStage = {stage} handleProgress = {setProgress} selections = {selections}/>
+                </>
+            ) : 
+            ('')
+                }
+
+            {stage === 4 ? (
+                
+                <>
+                    <CreatePostModalStage4 currentVoice = {voice} updateVoice = {setVoice}/>
+
+                    <ModalNavigationArrows leftDisable={false} rightDisable={false} updateStage = {setStage} currentStage = {stage} handleProgress = {setProgress} selections = {selections}/>
+                </>
+            ) : 
+            ('')
+                }
+            
+            {stage === 5 ? (
+                <>
+                    <CreatePostModalStage5 />
+
+                    <Button endIcon={<KeyboardArrowRightRoundedIcon />} onClick={handleUpload}>
+                        Share with the world
+                    </Button>
+                </>
+            ) : 
+            ('')
+                }
+
+            
+
+                   
 
         </Box>  
 
@@ -187,15 +199,3 @@ function CreatePostModal({open, handleClose, username}) {
 }
 
 export default CreatePostModal
-
-{/* <FormControl variant="standard">
-<InputLabel htmlFor="component-simple"></InputLabel>
-    <Input id="component-simple" value={caption} onChange={handleCaptionChange} />
-</FormControl>
-
-<FormControl variant="standard">
-<InputLabel htmlFor="component-simple"></InputLabel>
-    <Input id="component-simple" type = 'file' onChange={handleImageChange}/>
-</FormControl>
-
-<Button type = 'submit' onClick ={handleUpload}>Upload</Button> */}

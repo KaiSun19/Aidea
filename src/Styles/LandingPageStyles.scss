@@ -1,0 +1,148 @@
+@use '../index.scss';
+
+
+.landingPage-header{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    padding: 10px;
+    width: 100%;
+}
+
+.landingPage-logo{
+    width: 50%;
+}
+
+.landingPage-buttonGroup{
+    width: 25%;
+    box-shadow: none;
+    border-radius: 10px;
+    padding: 10px;
+
+    button{
+        width: 50%;
+        border-radius: 10px;
+        &:hover{
+            border-color: black;
+        }
+
+        &:first-child:hover{
+            background-color: black;
+        }
+
+        &:nth-child(2):hover{
+            background-color: white;
+        }
+
+    }
+}
+
+.landingPage-title{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    margin-top: 20px;
+    width: 100%;
+    padding: 0px 20px 0px 20px;
+}
+
+.landingPage-title-toggle{
+    margin-left: 5px;
+    font-weight: 350;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 50%;
+
+    h1{
+        transition: all 1s ease-in-out;
+    }
+
+}
+
+.landingPage-title-container{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.landingPage-cards{
+    margin-top: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    height: 350px;
+    overflow: hidden;
+
+    mask-image: linear-gradient(rgba(0, 0, 0, 1), transparent);
+
+    div{
+        max-width: 25%;
+        margin: 0 5px 0 5px;
+        min-height: 27%;
+
+        &:nth-child(2){
+            transform: translateY(42px);
+        }
+
+        &:nth-child(3){
+            transform: translateY(84px);
+        }
+
+        &:nth-child(4){
+            transform: translateY(42px);
+        }
+    }
+
+
+}
+
+@media (max-width: index.$sm-screen){
+    .landingPage-title{
+        flex-direction: column;
+        justify-content: center;
+
+        h1{
+            font-size: 3rem;
+        }
+    }
+
+    .landingPage-title-toggle{
+
+        width: 100%;
+        align-items: center;
+        h1{
+            font-size: 4rem;
+        }
+
+        .slider{
+            left: 0%;
+        }
+    }
+
+    .landingPage-cards{
+
+        div{
+
+            display: none;
+
+            &:last-child{
+                display: block;
+                min-width: 100%;
+            }
+        }
+    }
+
+}
+
+@media (max-width: index.$md-screen){
+
+    .landingPage-title{
+
+        h1{
+            font-size: 4rem;
+        }
+    }
+
+
+}

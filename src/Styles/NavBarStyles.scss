@@ -1,0 +1,7 @@
+@use '../index.scss';
+
+.navbar-logo{
+    &:hover{
+        cursor: pointer;
+    }
+}

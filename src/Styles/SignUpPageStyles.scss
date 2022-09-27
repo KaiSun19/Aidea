@@ -1,0 +1,44 @@
+@use '../index.scss';
+
+.signUp-logo{
+    width: 10%;
+    margin-top: -5%;
+}
+
+label{
+    .Mui-focused{
+        color: #d50000;
+    }
+}
+
+span.MuiLinearProgress-bar1{
+    background-color: #0d0d0d;
+}
+
+.signUp-caption{
+    position: absolute;
+    left: 0%;
+    right: 50%;
+    min-width: 100%;
+    bottom: 5%;
+}
+
+.signUp-avatar{
+    width: 20%;
+    height: 20%;
+}
+
+.signUp-buttonGroup{
+    position: absolute;
+    bottom: 10%;
+    left: 0;
+    min-width: 100%
+}
+
+.signUp-googleButton{
+    margin-top: 16px;
+    text-transform: capitalize;
+    border-radius: 10px;
+    width: 60%;
+}
+

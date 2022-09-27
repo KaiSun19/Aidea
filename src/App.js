@@ -11,7 +11,7 @@ import Profile from './Components/Profile';
 
 function App() {
 
-  const {user} = useUser();
+  // const {user} = useUser();
   
   return (
 
@@ -19,7 +19,7 @@ function App() {
 
       <BrowserRouter>
 
-      {user && 
+      {/* {user &&  */}
 
         <Routes>
 
@@ -29,7 +29,7 @@ function App() {
           <Route path="/sign-in" element={<SignInPage />} />
           <Route path= '/profile' element={<Profile />} /> 
 
-        </Routes>}
+        </Routes>
 
       </BrowserRouter>
 

@@ -1,0 +1,12 @@
+@use '../index.scss';
+
+.profile-saveButton{
+    border-radius: 10px;
+    text-transform: capitalize ;
+    border-color: black ;
+    transition: all 0.2s ease-in-out;
+}
+
+.profile-editButton{
+    transition: all 0.2s ease-in-out;
+}

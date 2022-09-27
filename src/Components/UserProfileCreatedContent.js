@@ -1,22 +1,27 @@
-import { Typography } from '@mui/material';
+import { Card, CardMedia, Grid, Stack, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import React, { useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom';
 import StyledButtonComponent from '../Helpers/CustomComponents/StyledButtonComponent';
-import { getUserPosts } from '../Helpers/getUserPosts';
+import { getUserPosts } from '../Helpers/firebaseHelpers/getUserPosts';
 import CreatePostModal from './CreatePostModal';
 import StyledEngineProvider from "@mui/material/StyledEngineProvider";
+import '../Styles/ProfileCreatedContentStyles.scss';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 
 function UserProfileCreatedContent({user}) {
 
-  const [ userPosts, setUserPosts] = useState('');
+  const [ userPosts, setUserPosts] = useState();
   const [createPostOpen, setCreatePostOpen] = useState(false)
+
+  console.log(user)
 
   useEffect( ()=>{
   getUserPosts(user.displayName).then(result => 
     setUserPosts(result)
     )}, [])
-  console.log(userPosts)
+  
+  console.log('user posts' + userPosts)
   
   if(userPosts === null){
   return (
@@ -36,11 +41,42 @@ function UserProfileCreatedContent({user}) {
   </StyledEngineProvider>
   )
   }
-  else{
+  else if(userPosts){
     return(
-      <div className='user-profile-content-created'>
+      <StyledEngineProvider injectFirst>
+        <Box  className='slide-right profile-createdContent'>
+          <Grid container  direction = 'row'>
+          {
+            userPosts?.map((post,key) =>{
 
-      </div>
+              return(
+                <Grid item  xs = {6} sm = {6} md = {4} key = {key} className  = 'createdContent-container'>
+                    <Card className='createdContent-card'>
+                      <CardMedia
+                      component="img"
+                      image={post.mediaUrls[0]}
+                      alt="user post"
+                      />
+
+                    </Card>
+
+                    <Box className='createdContent-overlay'>
+
+                      <Stack direction = 'row' className='overlay-stack'>
+                        <FavoriteIcon /> <Typography variant = 'h6'>10</Typography>
+                      </Stack>
+                    </Box>
+
+
+                </Grid>
+              )
+
+            })
+          }
+
+          </Grid>
+      </Box>
+    </StyledEngineProvider>
     )
   }
 }
